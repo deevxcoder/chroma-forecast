@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import ColorPrediction from "@/components/ColorPrediction";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   useEffect(() => {
@@ -55,6 +56,9 @@ const Index = () => {
           Demo version for entertainment purposes only
         </motion.p>
       </footer>
+      
+      {/* Toast notification container */}
+      <Toaster />
     </div>
   );
 };

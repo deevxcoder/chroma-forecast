@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import BalanceCard from "./BalanceCard";
@@ -19,7 +18,7 @@ import {
 } from "@/utils/gameUtils";
 import { toast } from "@/components/ui/use-toast";
 
-const GAME_DURATION = 60; // seconds
+const GAME_DURATION = 60; // 1 minute default
 const INITIAL_BALANCE = 100;
 
 const ColorPrediction = () => {
@@ -32,29 +31,34 @@ const ColorPrediction = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [gameHistory, setGameHistory] = useState<BetHistory[]>([]);
   const [lastResult, setLastResult] = useState<GameNumber | null>(null);
+  const [duration, setDuration] = useState(GAME_DURATION);
+  const [lastPayout, setLastPayout] = useState(0);
   
-  // Reset game state for a new round
+  const getSelectedBet = (): ColorOrSize | GameNumber | null => {
+    if (selectedColor) return selectedColor;
+    if (selectedSize) return selectedSize;
+    if (selectedNumber !== null) return selectedNumber;
+    return null;
+  };
+  
   const startNewRound = () => {
     setGameId(generateGameId());
     setSelectedColor(null);
     setSelectedNumber(null);
     setSelectedSize(null);
     setLastResult(null);
+    setLastPayout(0);
   };
   
-  // Handle game completion
   const handleGameComplete = () => {
     setIsProcessing(true);
     
-    // Simulate result calculation
     setTimeout(() => {
       const result = randomResult();
       setLastResult(result);
       
-      // Process bet if there is one
       processBet(result);
       
-      // After a delay, start a new round
       setTimeout(() => {
         startNewRound();
         setIsProcessing(false);
@@ -62,25 +66,21 @@ const ColorPrediction = () => {
     }, 1000);
   };
   
-  // Process the bet and update balance
   const processBet = (result: GameNumber) => {
     let userBet: ColorOrSize | GameNumber | null = null;
     
-    // Determine which bet the user made
     if (selectedColor) userBet = selectedColor;
     else if (selectedSize) userBet = selectedSize;
     else if (selectedNumber !== null) userBet = selectedNumber;
     
-    // If no bet was placed, return
     if (userBet === null) return;
     
-    // Calculate payout based on bet type and result
     const { payout, isWin } = calculatePayout(userBet, result, betAmount);
     
-    // Update balance
+    setLastPayout(isWin ? payout : 0);
+    
     setBalance((prev) => prev + payout - betAmount);
     
-    // Create history entry
     const historyEntry: BetHistory = {
       id: gameId,
       timestamp: Date.now(),
@@ -94,10 +94,8 @@ const ColorPrediction = () => {
                   result % 2 === 0 ? 'red' : 'green'
     };
     
-    // Update game history
     setGameHistory((prev) => [historyEntry, ...prev]);
     
-    // Show toast notification
     if (isWin) {
       toast({
         title: "You won!",
@@ -113,7 +111,6 @@ const ColorPrediction = () => {
     }
   };
   
-  // Handle bet amount selection
   const handleBetAmountSelect = (amount: BetAmount) => {
     if (balance < amount) {
       toast({
@@ -127,7 +124,6 @@ const ColorPrediction = () => {
     setBetAmount(amount);
   };
   
-  // Handle color selection
   const handleColorSelect = (color: ColorType) => {
     if (isProcessing) return;
     if (balance < betAmount) {
@@ -144,7 +140,6 @@ const ColorPrediction = () => {
     setSelectedSize(null);
   };
   
-  // Handle number selection
   const handleNumberSelect = (num: GameNumber) => {
     if (isProcessing) return;
     if (balance < betAmount) {
@@ -161,7 +156,6 @@ const ColorPrediction = () => {
     setSelectedSize(null);
   };
   
-  // Handle size selection
   const handleSizeSelect = (size: 'big' | 'small') => {
     if (isProcessing) return;
     if (balance < betAmount) {
@@ -178,7 +172,10 @@ const ColorPrediction = () => {
     setSelectedNumber(null);
   };
   
-  // Handle recharge
+  const handleTimeSlotSelect = (seconds: number) => {
+    setDuration(seconds);
+  };
+  
   const handleRecharge = () => {
     setBalance((prev) => prev + 100);
     toast({
@@ -187,7 +184,6 @@ const ColorPrediction = () => {
     });
   };
   
-  // Handle withdraw
   const handleWithdraw = () => {
     toast({
       title: "Withdrawal requested",
@@ -195,10 +191,8 @@ const ColorPrediction = () => {
     });
   };
   
-  // Generate array of numbers 0-9 for buttons
   const numberButtons: GameNumber[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   
-  // Bet multiplier options
   const betMultipliers: BetAmount[] = [1, 5, 10, 50, 100];
   
   return (
@@ -231,9 +225,14 @@ const ColorPrediction = () => {
       </div>
       
       <Timer
-        duration={GAME_DURATION}
+        duration={duration}
         onComplete={handleGameComplete}
         gameId={gameId}
+        isProcessing={isProcessing}
+        lastResult={lastResult}
+        selectedBet={getSelectedBet()}
+        payout={lastPayout}
+        betAmount={betAmount}
       />
       
       {isProcessing && lastResult !== null && (
