@@ -13,27 +13,36 @@ const getButtonColors = (number: GameNumber, isSelected: boolean) => {
   
   // Single color case
   if (!Array.isArray(colors)) {
-    const colorMap: Record<string, string> = {
-      red: "#e74c3c",
-      green: "#2ecc71",
-      violet: "#9b59b6"
+    const colorMap: Record<string, any> = {
+      red: {
+        bg: "bg-gradient-to-br from-rose-400 to-rose-600",
+        shadow: "rgba(244,63,94,0.7)"
+      },
+      green: {
+        bg: "bg-gradient-to-br from-emerald-400 to-emerald-600",
+        shadow: "rgba(16,185,129,0.7)"
+      },
+      violet: {
+        bg: "bg-gradient-to-br from-violet-400 to-violet-600",
+        shadow: "rgba(139,92,246,0.7)"
+      }
     };
     
     return {
-      background: colorMap[colors],
-      shadow: isSelected ? `0 0 15px ${colorMap[colors]}` : "none",
+      background: colorMap[colors].bg,
+      shadow: isSelected ? `0 0 15px ${colorMap[colors].shadow}` : "none",
       scale: isSelected ? 1.05 : 1
     };
   }
   
   // Multiple colors case (violet + another color)
   const primaryColor = colors[0] === "violet" ? colors[1] : colors[0];
-  const primaryColorHex = primaryColor === "red" ? "#e74c3c" : "#2ecc71";
-  const secondaryColorHex = "#9b59b6"; // violet
+  const violetGradient = "from-violet-500 via-violet-400";
+  const secondGradient = primaryColor === "red" ? "to-rose-500" : "to-emerald-500";
   
   return {
-    background: `linear-gradient(135deg, ${primaryColorHex}, ${secondaryColorHex})`,
-    shadow: isSelected ? `0 0 15px rgba(155, 89, 182, 0.7)` : "none",
+    background: `bg-gradient-to-br ${violetGradient} ${secondGradient}`,
+    shadow: isSelected ? `0 0 15px rgba(139,92,246,0.7)` : "none",
     scale: isSelected ? 1.05 : 1
   };
 };
@@ -43,9 +52,8 @@ const NumberButton = ({ number, isSelected, onClick }: NumberButtonProps) => {
   
   return (
     <motion.button
-      className="number-button focus:outline-none"
+      className={`number-button focus:outline-none ${background}`}
       style={{ 
-        background, 
         boxShadow: shadow,
         transform: `scale(${scale})`
       }}
@@ -56,6 +64,20 @@ const NumberButton = ({ number, isSelected, onClick }: NumberButtonProps) => {
       animate={{ opacity: 1, scale: scale }}
       transition={{ duration: 0.3 }}
     >
+      {isSelected && (
+        <motion.div 
+          className="absolute inset-0 rounded-full bg-white/20"
+          animate={{ 
+            opacity: [0, 0.3, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            repeatType: "loop"
+          }}
+        />
+      )}
       <div className="number-button-inner bg-white/10 backdrop-blur-sm text-white">
         {number}
       </div>
