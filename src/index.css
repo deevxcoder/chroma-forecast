@@ -1,10 +1,11 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 20% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 228 45% 45%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -32,22 +33,15 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -96,6 +90,48 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-zinc-900 text-foreground selection:bg-primary/20;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 shadow-lg;
+  }
+  
+  .gold-gradient {
+    background: linear-gradient(135deg, #f1c40f, #e67e22, #f39c12);
+  }
+  
+  .gold-text {
+    @apply bg-clip-text text-transparent;
+    background: linear-gradient(90deg, #f1c40f, #f39c12);
+  }
+  
+  .number-button {
+    @apply relative flex items-center justify-center rounded-full w-14 h-14 transition-all duration-300 ease-out;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .number-button-inner {
+    @apply absolute inset-0.5 rounded-full flex items-center justify-center font-bold text-lg;
+  }
+  
+  .progress-bar {
+    @apply h-1 bg-gray-200/20 rounded-full overflow-hidden;
+  }
+  
+  .progress-bar-fill {
+    @apply h-full;
+  }
+  
+  .tab-active {
+    @apply relative;
+  }
+  
+  .tab-active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-game-gold rounded;
   }
 }
