@@ -62,18 +62,6 @@ const Timer = ({
   // Warning state when timer is low
   const isWarning = timeLeft <= 10;
   
-  // Available time slots
-  const timeSlots = [
-    { label: "30s", value: 30 },
-    { label: "1m", value: 60 },
-    { label: "3m", value: 180 },
-    { label: "5m", value: 300 },
-    { label: "10m", value: 600 }
-  ];
-  
-  // Get active time slot
-  const activeSlot = timeSlots.find(slot => slot.value === duration) || timeSlots[0];
-  
   return (
     <motion.div 
       className="w-full max-w-md mx-auto relative"
@@ -83,24 +71,11 @@ const Timer = ({
     >
       {/* Timer Card */}
       <div className="glass-card rounded-xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-lg overflow-hidden">
-        {/* Time Slots */}
-        <div className="flex justify-between items-center p-2 border-b border-white/10">
-          {timeSlots.map((slot) => (
-            <div 
-              key={slot.value}
-              className={`w-12 h-12 rounded-md flex items-center justify-center text-xs font-semibold transition-all duration-300
-                ${slot.value === activeSlot.value ? 'bg-game-gold text-black' : 'bg-white/10 text-white/70 hover:bg-white/15'}`}
-            >
-              {slot.label}
-            </div>
-          ))}
-        </div>
-        
         {/* Timer Display */}
         <div className="p-4">
           <div className="flex justify-between items-center mb-3">
             <div className="px-2 py-1 bg-white/10 rounded text-xs font-medium text-white/70 backdrop-blur-sm">
-              {activeSlot.label}
+              {duration < 60 ? `${duration}s` : `${Math.floor(duration/60)}m`}
             </div>
             <div className="text-center">
               <p className="text-xs font-medium text-white/70 mb-1">Time remaining</p>

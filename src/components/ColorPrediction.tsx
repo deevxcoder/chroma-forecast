@@ -173,6 +173,7 @@ const ColorPrediction = () => {
   };
   
   const handleTimeSlotSelect = (seconds: number) => {
+    startNewRound();
     setDuration(seconds);
   };
   
@@ -195,6 +196,14 @@ const ColorPrediction = () => {
   
   const betMultipliers: BetAmount[] = [1, 5, 10, 50, 100];
   
+  const timeSlots = [
+    { label: "30s", value: 30 },
+    { label: "1m", value: 60 },
+    { label: "3m", value: 180 },
+    { label: "5m", value: 300 },
+    { label: "10m", value: 600 }
+  ];
+  
   return (
     <div className="w-full max-w-md mx-auto pb-10">
       <BalanceCard 
@@ -207,16 +216,18 @@ const ColorPrediction = () => {
         <div className="flex justify-between items-center mb-2">
           <div className="h-[2px] flex-1 bg-white/5"></div>
           <div className="px-4">
-            <div className="flex space-x-2">
-              {[1, 3, 5, 10].map((min) => (
-                <div 
-                  key={min}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs
-                    ${min === 1 ? 'bg-game-gold text-black font-semibold' : 'bg-white/10 text-white/70'}
-                  `}
+            <div className="grid grid-cols-5 gap-2">
+              {timeSlots.map((slot) => (
+                <motion.div 
+                  key={slot.value}
+                  className={`w-12 h-12 rounded-md flex items-center justify-center text-xs font-semibold cursor-pointer transition-all duration-300
+                    ${slot.value === duration ? 'bg-game-gold text-black' : 'bg-white/10 text-white/70 hover:bg-white/15'}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleTimeSlotSelect(slot.value)}
                 >
-                  {min} min
-                </div>
+                  {slot.label}
+                </motion.div>
               ))}
             </div>
           </div>
